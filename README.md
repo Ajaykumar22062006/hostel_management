@@ -50,3 +50,5 @@ After starting the frontend development server, you can log in using:
 
 ## Architecture Documents
 Review the generated `implementation_plan.md` and artifacts in your `.gemini` folder for full API specifics and ER Diagrams.
+
+http://localhost:5173/login

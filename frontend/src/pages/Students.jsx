@@ -58,12 +58,12 @@ const Students = () => {
       {/* Title & Actions Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">Students</h2>
-          <p className="text-slate-400 mt-1">Students Management</p>
+          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Students</h2>
+          <p className="text-slate-500 mt-1">Students Management</p>
         </div>
         
         {user?.role !== 'STUDENT' && (
-          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white px-5 py-2.5 rounded-lg font-medium shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_25px_rgba(99,102,241,0.6)] transition-all duration-300 transform hover:-translate-y-0.5">
+          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-500/20 transition-all duration-300 transform hover:-translate-y-0.5">
             <Plus size={18} />
             <span>Add Student</span>
           </button>
@@ -71,31 +71,31 @@ const Students = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex items-center justify-between">
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input 
             type="text" 
             placeholder="Search students..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950/50 border border-slate-700/50 text-sm rounded-lg py-2.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-slate-600 text-slate-300 transition-all"
+            className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl py-2.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 placeholder:text-slate-400 text-slate-800 transition-all"
           />
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden relative">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden relative">
         {loading && (
-          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
-             <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-             <p className="mt-4 text-indigo-400 font-medium">Loading records...</p>
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+             <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+             <p className="mt-4 text-indigo-600 font-semibold">Loading records...</p>
           </div>
         )}
         
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-950/50 text-slate-400 border-b border-slate-800 text-xs uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-xs uppercase tracking-wider font-bold">
               <tr>
                 <th className="px-6 py-4">Student ID</th>
                 <th className="px-6 py-4">Name</th>
@@ -106,10 +106,10 @@ const Students = () => {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80">
+            <tbody className="divide-y divide-slate-100">
               {filteredStudents.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan="7" className="px-6 py-12 text-center text-slate-400">
                     No students matched your search criteria.
                   </td>
                 </tr>
@@ -117,39 +117,39 @@ const Students = () => {
                 filteredStudents.map((student, idx) => (
                   <tr 
                     key={student.id + '-' + idx} 
-                    className="hover:bg-slate-800/40 transition-colors duration-150 group"
+                    className="hover:bg-slate-50/80 transition-colors duration-150 group"
                   >
-                    <td className="px-6 py-4 font-mono text-slate-300">{student.rollNumber}</td>
-                    <td className="px-6 py-4 font-medium text-slate-200">{student.name}</td>
-                    <td className="px-6 py-4 text-slate-400">{student.department}</td>
+                    <td className="px-6 py-4 font-mono text-slate-700 font-medium">{student.rollNumber}</td>
+                    <td className="px-6 py-4 font-semibold text-slate-900">{student.name}</td>
+                    <td className="px-6 py-4 text-slate-600">{student.department}</td>
                     <td className="px-6 py-4">
                       {student.room === 'Not assigned' ? (
-                        <span className="text-slate-500 italic">{student.room}</span>
+                        <span className="text-slate-400 italic">{student.room}</span>
                       ) : (
-                        <span className="text-slate-300 font-medium">{student.room}</span>
+                        <span className="text-slate-800 font-semibold">{student.room}</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-slate-400">{student.contact}</td>
+                    <td className="px-6 py-4 text-slate-600">{student.contact}</td>
                     <td className="px-6 py-4">
                       {student.status === 'ACTIVE' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           ACTIVE
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                           {student.status}
                         </span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-60 sm:group-hover:opacity-100 transition-opacity">
-                        <button className="p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-md transition-colors" title="View details">
+                        <button className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="View details">
                           <Eye size={18} />
                         </button>
-                        <button className="p-1.5 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-md transition-colors" title="Edit record">
+                        <button className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit record">
                           <Pencil size={18} />
                         </button>
-                        <button className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors" title="Delete record">
+                        <button className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete record">
                           <Trash2 size={18} />
                         </button>
                       </div>
