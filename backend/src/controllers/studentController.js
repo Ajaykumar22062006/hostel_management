@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma.js';
+import bcrypt from 'bcryptjs';
 
 export const getStudents = async (req, res) => {
   try {
@@ -6,7 +7,8 @@ export const getStudents = async (req, res) => {
       include: {
         user: { select: { email: true, role: true } },
         allocations: { include: { room: { include: { hostel: true } } }, where: { status: 'ACTIVE' } }
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(students);
   } catch (error) {
@@ -41,9 +43,52 @@ export const getStudentById = async (req, res) => {
 };
 
 export const createStudent = async (req, res) => {
-  // Handled mostly by auth registration, but we can allow admin to create independent profiles
-  // For simplicity assuming Admin registers them via auth/register with role STUDENT
-  res.status(501).json({ error: 'Use /api/auth/register for creating new students' });
+  try {
+    const { email, password, name, rollNumber, department, year, contact, address } = req.body;
+
+    if (!name || !rollNumber || !email) {
+      return res.status(400).json({ error: 'Name, Roll Number, and Email are required' });
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) return res.status(400).json({ error: 'User with this email already exists' });
+
+    const existingStudent = await prisma.student.findUnique({ where: { rollNumber } });
+    if (existingStudent) return res.status(400).json({ error: 'Student with this roll number already exists' });
+
+    const hashedPassword = await bcrypt.hash(password || 'password123', 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: 'STUDENT',
+        student: {
+          create: {
+            name,
+            rollNumber,
+            department: department || 'General',
+            year: parseInt(year) || 1,
+            contact: contact || '',
+            address: address || ''
+          }
+        }
+      },
+      include: {
+        student: {
+          include: {
+            user: { select: { email: true, role: true } },
+            allocations: { include: { room: { include: { hostel: true } } }, where: { status: 'ACTIVE' } }
+          }
+        }
+      }
+    });
+
+    res.status(201).json(user.student);
+  } catch (error) {
+    console.error('Error creating student:', error);
+    res.status(500).json({ error: 'Failed to create student: ' + error.message });
+  }
 };
 
 export const updateStudent = async (req, res) => {
@@ -53,7 +98,11 @@ export const updateStudent = async (req, res) => {
 
     const student = await prisma.student.update({
       where: { id: parseInt(id) },
-      data: { name, department, year, contact, address }
+      data: { name, department, year: parseInt(year), contact, address },
+      include: {
+        user: { select: { email: true, role: true } },
+        allocations: { include: { room: { include: { hostel: true } } }, where: { status: 'ACTIVE' } }
+      }
     });
 
     res.json(student);
@@ -61,3 +110,18 @@ export const updateStudent = async (req, res) => {
     res.status(500).json({ error: 'Failed to update student' });
   }
 };
+
+export const deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await prisma.student.findUnique({ where: { id: parseInt(id) } });
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    await prisma.user.delete({ where: { id: student.userId } });
+    res.json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete student', error);
+    res.status(500).json({ error: 'Failed to delete student' });
+  }
+};
+

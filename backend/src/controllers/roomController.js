@@ -34,8 +34,15 @@ export const allocateRoom = async (req, res) => {
   try {
     const { studentId, roomId, startDate } = req.body;
 
+    const parsedStudentId = parseInt(studentId);
+    const parsedRoomId = parseInt(roomId);
+
+    if (isNaN(parsedStudentId) || isNaN(parsedRoomId)) {
+      return res.status(400).json({ error: 'Valid studentId and roomId are required' });
+    }
+
     // Check capacity
-    const room = await prisma.room.findUnique({ where: { id: roomId } });
+    const room = await prisma.room.findUnique({ where: { id: parsedRoomId } });
     if (!room) return res.status(404).json({ error: 'Room not found' });
     if (room.currentOccupancy >= room.capacity) {
       return res.status(400).json({ error: 'Room is already full' });
@@ -43,33 +50,34 @@ export const allocateRoom = async (req, res) => {
 
     // Check if student already has active allocation
     const existing = await prisma.allocation.findFirst({
-      where: { studentId, status: 'ACTIVE' }
+      where: { studentId: parsedStudentId, status: 'ACTIVE' }
     });
     if (existing) {
-      return res.status(400).json({ error: 'Student is already allocated to a room' });
+      return res.status(400).json({ error: 'Student is already allocated to an active room' });
     }
 
     // Transaction to update room occupancy and create allocation
     const result = await prisma.$transaction([
       prisma.allocation.create({
         data: {
-          studentId,
-          roomId,
+          studentId: parsedStudentId,
+          roomId: parsedRoomId,
           startDate: new Date(startDate || new Date())
         }
       }),
       prisma.room.update({
-        where: { id: roomId },
+        where: { id: parsedRoomId },
         data: { currentOccupancy: { increment: 1 } }
       })
     ]);
 
     res.status(201).json({ message: 'Room allocated successfully', allocation: result[0] });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to allocate room' });
+    console.error('Error in allocateRoom:', error);
+    res.status(500).json({ error: 'Failed to allocate room: ' + error.message });
   }
 };
+
 
 export const deallocateRoom = async (req, res) => {
   try {
