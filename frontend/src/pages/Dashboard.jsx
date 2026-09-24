@@ -22,7 +22,7 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const endpoint = user?.role === 'STUDENT' ? '/api/dashboard/student' : '/api/dashboard/admin';
-      const res = await axios.get(`http://localhost:5000${endpoint}`);
+      const res = await axios.get(endpoint);
       setStats(res.data);
     } catch (error) {
       console.error('Error fetching dashboard stats', error);
@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   const handleOpenPayModal = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/fees');
+      const res = await axios.get('/api/fees');
       const pending = res.data.filter(f => f.status === 'PENDING');
       setStudentFees(pending);
       setIsPaymentModalOpen(true);
@@ -46,7 +46,7 @@ const Dashboard = () => {
   const handlePayFee = async (feeId) => {
     setSubmitting(true);
     try {
-      await axios.put(`http://localhost:5000/api/fees/${feeId}/pay`);
+      await axios.put(`/api/fees/${feeId}/pay`);
       setSuccessMessage('Payment processed successfully! Fee status updated to PAID.');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsPaymentModalOpen(false);

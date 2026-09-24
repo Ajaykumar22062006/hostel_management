@@ -12,8 +12,12 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS configuration supporting production CLIENT_URL
+const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : '*';
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -26,7 +30,7 @@ app.use('/api/dashboard', dashboardRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Hostel Management API is running' });
+  res.status(200).json({ status: 'ok', message: 'Hostel Management API is running cleanly' });
 });
 
 // Error handling middleware
@@ -37,6 +41,12 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Listen only when not running in Vercel serverless environment
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+export default app;
+

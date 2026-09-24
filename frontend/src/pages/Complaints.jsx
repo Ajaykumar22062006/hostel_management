@@ -24,7 +24,7 @@ const Complaints = () => {
   const fetchComplaints = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/complaints');
+      const res = await axios.get('/api/complaints');
       setComplaints(res.data);
     } catch (error) {
       console.error('Failed to fetch complaints', error);
@@ -43,7 +43,7 @@ const Complaints = () => {
     setSubmitting(true);
     setErrorMessage('');
     try {
-      await axios.post('http://localhost:5000/api/complaints', newComplaint);
+      await axios.post('/api/complaints', newComplaint);
       setSuccessMessage('Complaint ticket submitted successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsRaiseModalOpen(false);
@@ -59,7 +59,7 @@ const Complaints = () => {
   const handleStatusUpdate = async (id, status) => {
     setSubmitting(true);
     try {
-      await axios.put(`http://localhost:5000/api/complaints/${id}/status`, { status });
+      await axios.put(`/api/complaints/${id}/status`, { status });
       setSuccessMessage(`Ticket #${id} status updated to ${status}!`);
       setTimeout(() => setSuccessMessage(''), 3000);
       if (selectedComplaint && selectedComplaint.id === id) {

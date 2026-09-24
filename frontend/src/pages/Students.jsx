@@ -38,7 +38,7 @@ const Students = () => {
 
   const fetchStudents = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/students');
+      const res = await axios.get('/api/students');
       
       if (res.data.length === 0) {
         setStudents([
@@ -92,7 +92,7 @@ const Students = () => {
     setSubmitting(true);
     setErrorMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/students', formData);
+      const res = await axios.post('/api/students', formData);
       setSuccessMessage('Student added successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsAddModalOpen(false);
@@ -125,7 +125,7 @@ const Students = () => {
     setSubmitting(true);
     setErrorMessage('');
     try {
-      await axios.put(`http://localhost:5000/api/students/${selectedStudent.id}`, formData);
+      await axios.put(`/api/students/${selectedStudent.id}`, formData);
       setSuccessMessage('Student updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsEditModalOpen(false);
@@ -146,7 +146,7 @@ const Students = () => {
   const handleDeleteStudent = async () => {
     setSubmitting(true);
     try {
-      await axios.delete(`http://localhost:5000/api/students/${selectedStudent.id}`);
+      await axios.delete(`/api/students/${selectedStudent.id}`);
       setSuccessMessage('Student removed successfully');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsDeleteModalOpen(false);

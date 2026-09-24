@@ -31,8 +31,8 @@ const Rooms = () => {
     setLoading(true);
     try {
       const [roomsRes, studentsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/rooms'),
-        axios.get('http://localhost:5000/api/students')
+        axios.get('/api/rooms'),
+        axios.get('/api/students')
       ]);
 
       setRooms(roomsRes.data);
@@ -62,7 +62,7 @@ const Rooms = () => {
     setSubmitting(true);
     setErrorMessage('');
     try {
-      await axios.post('http://localhost:5000/api/rooms/allocate', {
+      await axios.post('/api/rooms/allocate', {
         studentId: parseInt(selectedStudentId),
         roomId: parseInt(selectedRoomId),
         startDate
@@ -83,7 +83,7 @@ const Rooms = () => {
   const handleDeallocate = async (allocationId) => {
     setSubmitting(true);
     try {
-      await axios.put(`http://localhost:5000/api/rooms/deallocate/${allocationId}`);
+      await axios.put(`/api/rooms/deallocate/${allocationId}`);
       setSuccessMessage('Student deallocated from room successfully.');
       setTimeout(() => setSuccessMessage(''), 3000);
       setIsDetailsModalOpen(false);

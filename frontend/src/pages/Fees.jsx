@@ -19,7 +19,7 @@ const Fees = () => {
   const fetchFees = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/fees');
+      const res = await axios.get('/api/fees');
       setFees(res.data);
     } catch (error) {
       console.error('Failed to fetch fees', error);
@@ -30,7 +30,7 @@ const Fees = () => {
 
   const handlePay = async (feeId) => {
     try {
-      await axios.put(`http://localhost:5000/api/fees/${feeId}/pay`);
+      await axios.put(`/api/fees/${feeId}/pay`);
       setSuccessMessage('Payment completed successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
       fetchFees();
