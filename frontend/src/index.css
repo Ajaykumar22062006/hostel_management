@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Premium Dynamic Color Palette */
   --primary: #4F46E5;
@@ -142,6 +146,3 @@ p, span, div {
 .gap-2 { gap: 0.5rem; }
 .gap-4 { gap: 1rem; }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
