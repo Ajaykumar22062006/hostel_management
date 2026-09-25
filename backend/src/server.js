@@ -12,10 +12,24 @@ dotenv.config();
 
 const app = express();
 
-// CORS configuration supporting production CLIENT_URL
-const allowedOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : '*';
+// CORS configuration supporting production CLIENT_URL & Vercel deployment
+const defaultAllowedOrigins = [
+  'https://hostel-management-lac-nine.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+const allowedOrigins = process.env.CLIENT_URL 
+  ? process.env.CLIENT_URL.split(',').map(o => o.trim()) 
+  : defaultAllowedOrigins;
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());
