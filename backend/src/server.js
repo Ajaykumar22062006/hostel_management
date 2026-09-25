@@ -12,23 +12,32 @@ dotenv.config();
 
 const app = express();
 
-// CORS configuration supporting production CLIENT_URL & Vercel deployment
+// CORS configuration — supports localhost dev and deployed frontend(s)
 const defaultAllowedOrigins = [
   'https://hostel-management-lac-nine.vercel.app',
+  'https://hostelmanagement-alpha.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000'
 ];
 
-const allowedOrigins = process.env.CLIENT_URL 
-  ? process.env.CLIENT_URL.split(',').map(o => o.trim()) 
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map(o => o.trim())
   : defaultAllowedOrigins;
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    // Allow any vercel.app or onrender.com subdomain, or explicitly listed origins
+    if (
+      allowedOrigins.includes('*') ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.onrender.com')
+    ) {
       return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true
 }));
@@ -44,7 +53,7 @@ app.use('/api/dashboard', dashboardRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Hostel Management API is running cleanly' });
+  res.status(200).json({ status: 'ok', message: 'Hostel Management API is running' });
 });
 
 // Error handling middleware
@@ -55,12 +64,9 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Listen only when not running in Vercel serverless environment
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
+// Always listen — works for both local dev and Render (persistent web service)
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 export default app;
-
