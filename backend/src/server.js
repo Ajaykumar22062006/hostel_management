@@ -20,9 +20,11 @@ const defaultAllowedOrigins = [
   'http://localhost:3000'
 ];
 
-const allowedOrigins = process.env.CLIENT_URL
+const envOrigins = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(',').map(o => o.trim())
-  : defaultAllowedOrigins;
+  : [];
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
 
 app.use(cors({
   origin: (origin, callback) => {
